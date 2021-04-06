@@ -8,8 +8,10 @@ import core.data.exceptions.MismachedNumberOfInputsAndOutputsException;
 import core.network_components.Transformer;
 import core.network_components.error_functions.ErrorFunction;
 import core.network_components.network_abstract.Network;
+import core.network_components.validation_functions.ValidationFunction;
 import utils.ListUtils;
 
+import java.lang.reflect.Array;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +37,37 @@ public class LinearNetwork implements Network<ArrayData,ArrayData> {
 //        layers.getFirst().nodes =
         layers.listIterator(1).forEachRemaining(NodeLayer::recieve);
         return layers.getLast().getAsArray();
+    }
+
+    public List<ArrayData> predict(List<ArrayData> inputs) {
+        LinkedList<ArrayData> predicted = new LinkedList<>();
+        inputs.forEach(input->predicted.add(predict(input)));
+        return predicted;
+    }
+
+
+    // In this case, validation is:
+    // ALL of the outputs [%true,%false]
+    // being
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    public int fitUntilValidated(List<ArrayData> inputs, List<ArrayData> outputs, double lRate, ValidationFunction validationFunction, double percent) {
+        int epochs = 0;
+        while(true) {
+            epochs++;
+            fitSetSingle(inputs,outputs,lRate);
+            List<ArrayData> predicted = predict(inputs);
+            double percentValid = validationFunction.percentValidated(predicted,outputs);
+            System.out.println("Epoch: " + epochs + " completed | Validation: " + percentValid);
+            if(percentValid>=percent) break;
+        }
+        return epochs;
     }
 
     @Override

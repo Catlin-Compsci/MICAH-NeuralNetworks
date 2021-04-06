@@ -29,10 +29,10 @@ public class Main {
 //        nn.addNodeLayer(2);
 
         LinkedList<InputOutputPair<ArrayData,ArrayData>> trainData = new LinkedList<>();
-        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,0}),ArrayData.linearFromArray(new double[]{1,0})));
-        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,0}),ArrayData.linearFromArray(new double[]{1,0})));
-        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,1}),ArrayData.linearFromArray(new double[]{1,0})));
-        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,1}),ArrayData.linearFromArray(new double[]{0,0})));
+        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,0}),ArrayData.linearFromArray(new double[]{0,0})));
+        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,0}),ArrayData.linearFromArray(new double[]{0,0})));
+        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,1}),ArrayData.linearFromArray(new double[]{0,0})));
+        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,1}),ArrayData.linearFromArray(new double[]{1,0})));
 //        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,1}),ArrayData.linearFromArray(new double[]{1})));
 
 
