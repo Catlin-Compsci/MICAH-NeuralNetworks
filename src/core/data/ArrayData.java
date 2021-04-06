@@ -9,16 +9,21 @@ import core.network_components.network_classes.NodeLayer;
 import utils.ArrayUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ArrayData implements Data<ArrayShape> {
+public class ArrayData implements Data<ArrayShape>, Iterable<ArrayData> {
     private ArrayShape shape;
     ArrayList<ArrayData> dimensions;
     double data;
     private boolean isPoint;
 
+    @Override
+    public Iterator<ArrayData> iterator() {
+        return dimensions.iterator();
+    }
 
     public static ArrayData linearFromArray(double[] points) {
         ArrayData ret = new ArrayData();
