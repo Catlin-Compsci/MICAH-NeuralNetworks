@@ -8,24 +8,18 @@ import java.util.function.Supplier;
 
 public abstract class ValidationFunction {
 
-    List<ArrayData> realY;
-
-    public ValidationFunction(List<ArrayData> realY) {
-        this.realY = realY;
-    }
-
     public abstract boolean validate(ArrayData predictedY, ArrayData real);
 
-    public interface ValidationFunctionFactory extends Function<List<ArrayData>,ValidationFunction> {
-        public ValidationFunction apply(List<ArrayData> data);
-    }
-
-    public static final ValidationFunctionFactory oneHotGreatest = new ValidationFunctionFactory() {
-        @Override
-        public ValidationFunction apply(List<ArrayData> data) {
-            return new OneHotGreatest(data);
-        }
-    };
+//    public interface ValidationFunctionFactory extends Function<List<ArrayData>,ValidationFunction> {
+//        public ValidationFunction apply(List<ArrayData> data);
+//    }
+//
+//    public static final ValidationFunctionFactory oneHotGreatest = new ValidationFunctionFactory() {
+//        @Override
+//        public ValidationFunction apply(List<ArrayData> data) {
+//            return new OneHotGreatest(data);
+//        }
+//    };
 
     public double percentValidated(List<ArrayData> predicted, List<ArrayData> real) {
         assert real.size() == predicted.size();

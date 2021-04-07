@@ -6,8 +6,17 @@ import core.data.ArrayShape;
 import java.util.List;
 
 public class OneHotGreatest extends ValidationFunction {
-    public OneHotGreatest(List<ArrayData> realY) {
-        super(realY);
+
+    double threshold;
+    double difference;
+
+    public OneHotGreatest() {
+        this(0,0);
+    }
+    public OneHotGreatest(double threshold, double difference) {
+        super();
+        this.threshold = threshold;
+        this.difference = difference;
     }
 
     @Override
@@ -16,7 +25,7 @@ public class OneHotGreatest extends ValidationFunction {
         return largestIndex(predictedY) == largestIndex(real);
     }
 
-    private int largestIndex(ArrayData data) {
+    protected double[] largestIndexValue(ArrayData data) {
         int index = 0;
         double value = 0;
         for (int i = 0; i < data.getDimensionsUnsafe().size(); i++) {
@@ -26,6 +35,12 @@ public class OneHotGreatest extends ValidationFunction {
                 index = i;
             }
         }
-        return index;
+        return new double[]{index,value};
     }
+
+    protected int largestIndex(ArrayData data) {
+        return (int) largestIndexValue(data)[0];
+    }
+
+
 }

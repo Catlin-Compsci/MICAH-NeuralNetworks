@@ -1,6 +1,7 @@
 package core.network_components.network_classes;
 
 import core.data.ArrayData;
+import core.data.ArrayDataSet;
 import core.data.ArrayShape;
 import core.data.InputOutputPair;
 import core.data.exceptions.IllegalDataShapeException;
@@ -68,6 +69,13 @@ public class LinearNetwork implements Network<ArrayData,ArrayData> {
             if(percentValid>=percent) break;
         }
         return epochs;
+    }
+
+    public int fitUntilValidated(ArrayDataSet data, double lRate, ValidationFunction validationFunction, double percent) {
+        LinkedList<ArrayData> inputs = new LinkedList<>();
+        LinkedList<ArrayData> outputs = new LinkedList<>();
+        data.forEach(pair->{inputs.add(pair.getInput()); outputs.add(pair.getOutput());});
+        return fitUntilValidated(inputs,outputs,lRate,validationFunction,percent);
     }
 
     @Override

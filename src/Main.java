@@ -1,6 +1,8 @@
 import core.data.ArrayData;
+import core.data.ArrayDataSet;
 import core.data.InputOutputPair;
 import core.network_components.network_classes.LinearNetwork;
+import core.network_components.validation_functions.OneHotGreatest;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -28,7 +30,7 @@ public class Main {
 //        nn.addNodeLayer(1);
 //        nn.addNodeLayer(2);
 
-        LinkedList<InputOutputPair<ArrayData,ArrayData>> trainData = new LinkedList<>();
+        ArrayDataSet trainData = new ArrayDataSet();
         trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,0}),ArrayData.linearFromArray(new double[]{0,0})));
         trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,0}),ArrayData.linearFromArray(new double[]{0,0})));
         trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,1}),ArrayData.linearFromArray(new double[]{0,0})));
@@ -36,9 +38,11 @@ public class Main {
 //        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,1}),ArrayData.linearFromArray(new double[]{1})));
 
 
-        for (int i = 0; i < 25000; i++) {
-            nn.fitSetSingle(trainData,1);
-        }
+//        for (int i = 0; i < 25000; i++) {
+//            nn.fitSetSingle(trainData,1);
+//        }
+
+        nn.fitUntilValidated(trainData,0.5,new OneHotGreatest(),.5);
 
         ArrayData input = ArrayData.linearFromArray(new double[]{0,0});
         System.out.println(input);
