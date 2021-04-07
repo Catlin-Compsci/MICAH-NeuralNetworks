@@ -21,8 +21,10 @@ public class OneHotGreatest extends ValidationFunction {
 
     @Override
     public boolean validate(ArrayData predictedY, ArrayData real) {
-        System.out.println("DEBUG: predicted numdims- " + predictedY.getShape().numDims());
-        return largestIndex(predictedY) == largestIndex(real);
+        assert predictedY.getShape().numDims() == 2 && real.getShape().numDims() == 2;
+        boolean valid = largestIndex(predictedY) == largestIndex(real);
+        System.out.println("DEBUG: predicted: " + predictedY + " real: " + real + " valid: " + valid);
+        return valid;
     }
 
     protected double[] largestIndexValue(ArrayData data) {
@@ -30,11 +32,11 @@ public class OneHotGreatest extends ValidationFunction {
         double value = 0;
         for (int i = 0; i < data.getDimensionsUnsafe().size(); i++) {
             double daVal = data.getDimensionsUnsafe().get(i).getData();
-            if(daVal < value) {
+            if(value < daVal) {
                 value = daVal;
                 index = i;
             }
-        }
+        } // christian schwab, christian schmitt
         return new double[]{index,value};
     }
 

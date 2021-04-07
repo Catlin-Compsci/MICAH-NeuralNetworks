@@ -23,11 +23,11 @@ public abstract class ValidationFunction {
 
     public double percentValidated(List<ArrayData> predicted, List<ArrayData> real) {
         assert real.size() == predicted.size();
-        int correct = 0;
+        double correct = 0;
         for(int i = 0; i < predicted.size(); i++) {
             correct+=validate(predicted.get(i),real.get(i)) ? 1 : 0;
         }
-        return correct/predicted.size();
+        return correct/(double) predicted.size();
     }
 
 }

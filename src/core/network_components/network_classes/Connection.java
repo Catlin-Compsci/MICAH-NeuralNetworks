@@ -17,7 +17,7 @@ public class Connection {
     }
 
     public void run() {
-        end.take(start.emit() * weight);
+        end.intake(start.emit() * weight);
 //        if(start instanceof BiasNode) System.out.println(weight);
     }
 

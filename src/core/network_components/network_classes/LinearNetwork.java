@@ -16,6 +16,23 @@ import java.lang.reflect.Array;
 import java.util.LinkedList;
 import java.util.List;
 
+// POSSIBLE WRONGIN'S
+//
+// Bias nodes not sending
+// Bias nodes not propagating
+// Bias nodes not existing
+//
+// HAHA!! YES!!! ERROR FOUND IN LIKE TWO SECONDS LMAO!!!!
+// error was -- BiasNode inits with value zero, should have value one xDDD
+// IM SO FRICKING HAPPY!!!!!
+//
+//
+//
+//
+//
+//
+//
+
 public class LinearNetwork implements Network<ArrayData,ArrayData> {
     //public class Network {
     NodeLayer inputLayer;

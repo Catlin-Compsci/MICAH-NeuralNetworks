@@ -7,7 +7,7 @@ import utils.NumUtils;
 public class BiasNode extends Node{
 
     public BiasNode() {
-        super(0,new Linear());
+        super(1,new Linear());
     }
 
     @Override
@@ -16,7 +16,7 @@ public class BiasNode extends Node{
     }
 
     @Override
-    public void take(double value) {
+    public void intake(double value) {
         System.out.println("Oops! You put a bias node into a network, silly you!");
     }
 

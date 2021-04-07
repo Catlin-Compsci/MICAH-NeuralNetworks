@@ -24,17 +24,14 @@ public class Main {
 
         LinearNetwork nn = new LinearNetwork();
         nn.addNodeLayer(2);
+        nn.addNodeLayer(3);
         nn.addNodeLayer(2);
-        nn.addNodeLayer(2);
-//        nn.addNodeLayer(2);
-//        nn.addNodeLayer(1);
-//        nn.addNodeLayer(2);
 
         ArrayDataSet trainData = new ArrayDataSet();
-        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,0}),ArrayData.linearFromArray(new double[]{0,0})));
-        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,0}),ArrayData.linearFromArray(new double[]{0,0})));
-        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,1}),ArrayData.linearFromArray(new double[]{0,0})));
-        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,1}),ArrayData.linearFromArray(new double[]{1,0})));
+        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,0}),ArrayData.linearFromArray(new double[]{0,1})));
+        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,0}),ArrayData.linearFromArray(new double[]{1,0})));
+        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{0,1}),ArrayData.linearFromArray(new double[]{1,0})));
+        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,1}),ArrayData.linearFromArray(new double[]{0,1})));
 //        trainData.add(new InputOutputPair(ArrayData.linearFromArray(new double[]{1,1}),ArrayData.linearFromArray(new double[]{1})));
 
 
@@ -42,7 +39,7 @@ public class Main {
 //            nn.fitSetSingle(trainData,1);
 //        }
 
-        nn.fitUntilValidated(trainData,0.5,new OneHotGreatest(),.5);
+        nn.fitUntilValidated(trainData,1,new OneHotGreatest(),1);
 
         ArrayData input = ArrayData.linearFromArray(new double[]{0,0});
         System.out.println(input);

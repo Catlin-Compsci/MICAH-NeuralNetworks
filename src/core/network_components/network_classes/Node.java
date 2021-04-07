@@ -61,7 +61,7 @@ public class Node implements Emitter, Reciever {
     }
 
     @Override
-    public void take(double value) {
+    public void intake(double value) {
         total += value;
     }
 }
