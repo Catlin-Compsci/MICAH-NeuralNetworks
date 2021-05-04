@@ -12,6 +12,7 @@ public class BiasNode extends Node{
 
     @Override
     public double emit() {
+//        System.out.println("BiasNode weight: " + connectionsOut.get(0).weight);
         return super.emit();
     }
 

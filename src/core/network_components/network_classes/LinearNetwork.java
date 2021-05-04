@@ -6,13 +6,11 @@ import core.data.ArrayShape;
 import core.data.InputOutputPair;
 import core.data.exceptions.IllegalDataShapeException;
 import core.data.exceptions.MismachedNumberOfInputsAndOutputsException;
-import core.network_components.Transformer;
 import core.network_components.error_functions.ErrorFunction;
 import core.network_components.network_abstract.Network;
 import core.network_components.validation_functions.ValidationFunction;
 import utils.ListUtils;
 
-import java.lang.reflect.Array;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,16 +29,29 @@ import java.util.List;
 //
 //
 //
+// Treating the input layer as a normal layer
 //
+// Error signals getting really small at the input of the network
 
 public class LinearNetwork implements Network<ArrayData,ArrayData> {
-    //public class Network {
-    NodeLayer inputLayer;
+
+//    NodeLayer inputLayer;
     LinkedList<NodeLayer> layers = new LinkedList<>();
-    Transformer output;
+    SensorLayer sensorLayer;
+//    Transformer output;
     ArrayShape inputShape;
     ArrayShape outputShape;
-    ErrorFunction errorFunction;
+
+    public LinearNetwork(int inputNodes) {
+        this.sensorLayer = new SensorLayer(inputNodes);
+        this.inputShape = new ArrayShape(inputNodes);
+    }
+
+    public LinearNetwork(ArrayShape inputShape) {
+        this(inputShape.numPoints());
+        this.inputShape = inputShape;
+    }
+
 
     public ArrayData predict(ArrayData input) {
         if(!input.getShape().canReshapeTo(inputShape)) throw new IllegalDataShapeException(inputShape,input.getShape());
@@ -49,11 +60,12 @@ public class LinearNetwork implements Network<ArrayData,ArrayData> {
 
         for (int i = 0; i < input.getDimensionsUnsafe().size(); i++) {
 //            layers.getFirst().nodes.get(i).set(inputDataLayer.nodes.get(i).emit());
-            layers.getFirst().nodes.get(i).set(input.get(i).getData());
+//            layers.getFirst().nodes.get(i).set(input.get(i).getData());
+            sensorLayer.nodes.get(i).set(input.getPoint(i));
         }
 
 //        layers.getFirst().nodes =
-        layers.listIterator(1).forEachRemaining(NodeLayer::recieve);
+        layers.forEach(NodeLayer::recieve);
         return layers.getLast().getAsArray();
     }
 
@@ -88,11 +100,11 @@ public class LinearNetwork implements Network<ArrayData,ArrayData> {
         return epochs;
     }
 
-    public int fitUntilValidated(ArrayDataSet data, double lRate, ValidationFunction validationFunction, double percent) {
+    public int fitUntilValidated(ArrayDataSet data, double lRate, ValidationFunction validationFunction, double validateProportion) {
         LinkedList<ArrayData> inputs = new LinkedList<>();
         LinkedList<ArrayData> outputs = new LinkedList<>();
         data.forEach(pair->{inputs.add(pair.getInput()); outputs.add(pair.getOutput());});
-        return fitUntilValidated(inputs,outputs,lRate,validationFunction,percent);
+        return fitUntilValidated(inputs,outputs,lRate,validationFunction,validateProportion);
     }
 
     @Override
@@ -101,19 +113,28 @@ public class LinearNetwork implements Network<ArrayData,ArrayData> {
         NodeLayer outputLayer = layers.getLast();
         for (int i = 0; i < outputLayer.nodes.size(); i++) {
             Node node = outputLayer.nodes.get(i);
+            //TODO test that this is correct!
             node.errorSignal = err.getError(correctOutput.getPoint(i),predictedOutput.getPoint(i),node.activation);
 //            node.connectionsIn.forEach(c-> c.weight += node.errorSignal * c.start.emit() * lRate);
         }
 //        predLayer.nodes.forEach(from -> layer.nodes.forEach(to -> new Connection(from, to)));
 
+        for (Node node : outputLayer.nodes) {
+            System.out.println(node.errorSignal);
+        }
+
         ListUtils.reverserator(layers,1).forEachRemaining(l->l.nodes.forEach(n-> {
             n.errorSignal = 0;
             n.connectionsOut.forEach(c-> n.errorSignal+=c.end.errorSignal * c.weight);
-            n.errorSignal *= n.activation.slopeAtY(n.emit());
+            // TODO Switch this out
+            n.errorSignal *= n.activation.slopeAtX(n.getTotal());
+//            n.errorSignal *= n.activation.slopeAtY(n.emit());
+            System.out.println(n.errorSignal);
 
         }));
         ListUtils.reverserator(layers).forEachRemaining(l->l.nodes.forEach(n->
                 n.connectionsIn.forEach(c-> {
+                    //todO check that ones in are ends
                     c.weight += n.errorSignal * c.start.emit() * lRate;
                 })
         ));
@@ -142,15 +163,16 @@ public class LinearNetwork implements Network<ArrayData,ArrayData> {
     public void addNodeLayer(int nodeCount) {
         NodeLayer layer = new NodeLayer(nodeCount);
 
+        NodeLayer previous;
         if(layers.size()==0) {
-            inputShape = new ArrayShape(nodeCount);
+            previous = sensorLayer;
         } else {
-            NodeLayer previous = layers.getLast();
+            previous = layers.getLast();
             //create connections
-            previous.nodes.forEach(from -> layer.nodes.forEach(to -> new Connection(from, to)));
         }
+        previous.nodes.forEach(from -> layer.nodes.forEach(to -> new Connection(from, to)));
 
-        layers.add(layer);
+        layers.addLast(layer);
         outputShape = layer.getShape();
     }
 

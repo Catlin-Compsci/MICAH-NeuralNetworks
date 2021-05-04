@@ -7,17 +7,6 @@ import java.util.List;
 
 public class OneHotGreatest extends ValidationFunction {
 
-    double threshold;
-    double difference;
-
-    public OneHotGreatest() {
-        this(0,0);
-    }
-    public OneHotGreatest(double threshold, double difference) {
-        super();
-        this.threshold = threshold;
-        this.difference = difference;
-    }
 
     @Override
     public boolean validate(ArrayData predictedY, ArrayData real) {
@@ -42,6 +31,9 @@ public class OneHotGreatest extends ValidationFunction {
 
     protected int largestIndex(ArrayData data) {
         return (int) largestIndexValue(data)[0];
+    }
+    protected double largestValue(ArrayData data) {
+        return largestIndexValue(data)[1];
     }
 
 

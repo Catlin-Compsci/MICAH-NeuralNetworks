@@ -16,6 +16,10 @@ public class NodeLayer {
         }
     }
 
+    protected NodeLayer() {
+
+    }
+
 //    public NodeLayer(int nodeCount) {
 //        this(nodeCount,new ErrorSignal());
 //    }

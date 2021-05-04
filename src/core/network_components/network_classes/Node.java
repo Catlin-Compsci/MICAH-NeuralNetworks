@@ -19,6 +19,7 @@ public class Node implements Emitter, Reciever {
     ArrayList<Connection> connectionsOut = new ArrayList<>();
     ActivationFunction activation = new Logistic();
 
+    //TODO Try changing initial from 0 to 1
     public Node(ActivationFunction activation) {
         this(0,activation);
     }
@@ -49,6 +50,8 @@ public class Node implements Emitter, Reciever {
     public double emit() {
         //REMOVED SO THAT BIAS IS A CONNECTION IN
 //        return activation.getScaled(total + biasWeight * 1);
+
+        //CACHE THIS VALUE!
         return activation.getScaled(total);
     }
 
@@ -63,5 +66,9 @@ public class Node implements Emitter, Reciever {
     @Override
     public void intake(double value) {
         total += value;
+    }
+
+    public double getTotal() {
+        return total;
     }
 }
