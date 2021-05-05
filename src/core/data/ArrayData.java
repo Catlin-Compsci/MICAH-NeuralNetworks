@@ -25,7 +25,7 @@ public class ArrayData implements Data<ArrayShape>, Iterable<ArrayData> {
         return dimensions.iterator();
     }
 
-    public static ArrayData linearFromArray(double[] points) {
+    public static ArrayData from(double[] points) {
         ArrayData ret = new ArrayData();
         for(double point : points) {
             ret.add(new ArrayData(point));

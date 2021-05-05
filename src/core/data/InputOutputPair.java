@@ -1,19 +1,19 @@
 package core.data;
 
 public class InputOutputPair<I extends Data, O extends Data> {
-    private O input;
-    private I output;
+    private I input;
+    private O output;
 
-    public InputOutputPair(O input, I output) {
+    public InputOutputPair(I input, O output) {
         this.input = input;
         this.output = output;
     }
 
-    public O getInput() {
+    public I getInput() {
         return input;
     }
 
-    public I getOutput() {
+    public O getOutput() {
         return output;
     }
 }

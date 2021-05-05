@@ -95,27 +95,33 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
     //
     //
     //
-    public int fitUntilValidated(List<ArrayData> inputs, List<ArrayData> outputs, double lRate, ValidationFunction validationFunction, double percent) {
+    public int fitUntilValidated(List<ArrayData> inputs, List<ArrayData> outputs, double lRate, ValidationFunction validationFunction, double proportuneValid) {
         int epochs = 0;
         while (true) {
             epochs++;
             fitSetSingle(inputs, outputs, lRate);
             List<ArrayData> predicted = predict(inputs);
             double percentValid = validationFunction.percentValidated(predicted, outputs);
-            System.out.println("Epoch: " + epochs + " completed | Validation: " + percentValid);
-            if (percentValid >= percent) break;
+            if (Integer.parseInt((String.valueOf(epochs) + "0").substring(1)) == 0)
+                System.out.println("Epoch: " + epochs + " completed | Validation: " + percentValid);
+            if (percentValid >= proportuneValid) break;
         }
+        System.out.println(proportuneValid + " validation accuracy met in " + epochs + " epochs");
         return epochs;
     }
 
-    public int fitUntilValidated(ArrayDataSet data, double lRate, ValidationFunction validationFunction, double validateProportion) {
+    public int fitUntilValidated(ArrayDataSet trainingData, double lRate, ValidationFunction validationFunction, double validateProportion) {
         LinkedList<ArrayData> inputs = new LinkedList<>();
         LinkedList<ArrayData> outputs = new LinkedList<>();
-        data.forEach(pair -> {
+        trainingData.forEach(pair -> {
             inputs.add(pair.getInput());
             outputs.add(pair.getOutput());
         });
         return fitUntilValidated(inputs, outputs, lRate, validationFunction, validateProportion);
+    }
+
+    public double testProportionValid(ArrayDataSet testData, ValidationFunction validationFunction) {
+        return validationFunction.percentValidated(predict(testData.getInputs()), testData.getOutputs());
     }
 
     @Override
@@ -130,17 +136,12 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
         }
 //        predLayer.nodes.forEach(from -> layer.nodes.forEach(to -> new Connection(from, to)));
 
-        for (Node node : outputLayer.nodes) {
-            System.out.println(node.errorSignal);
-        }
-
         ListUtils.reverserator(layers, 1).forEachRemaining(l -> l.nodes.forEach(n -> {
             n.errorSignal = 0;
             n.connectionsOut.forEach(c -> n.errorSignal += c.end.errorSignal * c.weight);
             // TODO Switch this out
-            n.errorSignal *= n.activation.slopeAtX(n.getTotal());
-//            n.errorSignal *= n.activation.slopeAtY(n.emit());
-            System.out.println(n.errorSignal);
+//            n.errorSignal *= n.activation.slopeAtX(n.getTotal());
+            n.errorSignal *= n.activation.slopeAtY(n.emit());
 
         }));
         ListUtils.reverserator(layers).forEachRemaining(l -> l.nodes.forEach(n ->
@@ -283,8 +284,11 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
     }
 
     public static LinearNetwork load(String filePath) {
-        try { return createFromString(new Scanner(new File(filePath)).tokens().collect(Collectors.joining("\n")));
-        } catch (FileNotFoundException e) { System.out.println("Could not load NN file! > " + e.getMessage()); }
+        try {
+            return createFromString(new Scanner(new File(filePath)).tokens().collect(Collectors.joining("\n")));
+        } catch (FileNotFoundException e) {
+            System.out.println("Could not load NN file! > " + e.getMessage());
+        }
         return null;
     }
 }

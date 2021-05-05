@@ -38,4 +38,12 @@ public class ArrayUtils {
         }
         return ret;
     }
+
+    public static double[] subsection(double[] array, int start, int end) {
+        double[] ret = new double[end-start];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = array[i+start];
+        }
+        return ret;
+    }
 }

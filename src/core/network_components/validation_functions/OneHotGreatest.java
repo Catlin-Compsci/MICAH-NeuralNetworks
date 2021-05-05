@@ -12,7 +12,7 @@ public class OneHotGreatest extends ValidationFunction {
     public boolean validate(ArrayData predictedY, ArrayData real) {
         assert predictedY.getShape().numDims() == 2 && real.getShape().numDims() == 2;
         boolean valid = largestIndex(predictedY) == largestIndex(real);
-        System.out.println("DEBUG: predicted: " + predictedY + " real: " + real + " valid: " + valid);
+//        System.out.println("DEBUG: predicted: " + predictedY + " real: " + real + " valid: " + valid);
         return valid;
     }
 

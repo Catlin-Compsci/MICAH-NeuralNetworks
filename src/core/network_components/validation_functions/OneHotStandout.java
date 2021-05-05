@@ -16,7 +16,7 @@ public class OneHotStandout extends OneHotGreatest {
     @Override
     public boolean validate(ArrayData predictedY, ArrayData real) {
         boolean valid = validatee(predictedY, real);
-        System.out.println("DEBUG: predicted: " + predictedY + " real: " + real + " valid: " + valid);
+//        System.out.println("DEBUG: predicted: " + predictedY + " real: " + real + " valid: " + valid);
         return valid;
     }
 
