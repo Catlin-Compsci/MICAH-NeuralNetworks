@@ -36,12 +36,20 @@ public class AKDigitsClassifierExample {
         // BUILD NEURAL NETWORK!!!!
         LinearNetwork nn = new LinearNetwork(trainData.get(0).getInput().getShape());
         nn.addNodeLayer(32);
-        nn.addNodeLayer(32);
+        nn.addNodeLayer(16);
         nn.addNodeLayer(trainData.get(0).getOutput().getShape().numPoints());
 
-
-        nn.fitUntilValidated(trainData,0.06,new OneHotStandout(0.5,0.1),0.75);
-        nn.save("data/networks/DIGITS-AK/initialTest.mpnn");
+        nn.fitUntilValidated(trainData,0.06,new OneHotStandout(0.5,0.1),0.98);
+        nn.save("data/networks/DIGITS-AK/2L-32,16.mpnn");
         System.out.println("TEST ACCURACY: " + nn.testProportionValid(testData, new OneHotGreatest()));
+
+
+//        System.out.println("TEST ACCURACY: " + digitsNetwork.testProportionValid(testData, new OneHotGreatest()));
+//        System.out.println("TEST ACCURACY (strict verification): " + digitsNetwork.testProportionValid(testData, new OneHotStandout(0.5,0.1)));
+//        System.out.println(">");
+//        InputOutputPair<ArrayData,ArrayData> example = testData.get(334);
+//        System.out.println("INPUT: " + example.getInput());
+//        System.out.println("REAL ANSWER: " + example.getOutput());
+//        System.out.println("PREDICTION: " + digitsNetwork.predict(example.getInput()));
     }
 }

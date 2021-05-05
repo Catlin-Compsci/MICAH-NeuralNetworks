@@ -191,13 +191,6 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
         outputShape = layer.getShape();
     }
 
-    public void learn(ArrayData inputs, ArrayData outputs) {
-        if (!inputs.getShape().chip().equals(inputShape))
-            throw new IllegalDataShapeException(inputShape, inputs.getShape().chip());
-        if (!outputs.getShape().chip().equals(outputShape))
-            throw new IllegalDataShapeException(outputShape, outputs.getShape().chip());
-    }
-
     public ArrayShape getInputShape() {
         return inputShape;
     }
@@ -262,6 +255,7 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
         LinkedList<Double> vals = new LinkedList<>();
         for (String s : bois) {
             if (i == 0) {
+                // TODO Network shape checking
             } else {
                 for (String weight : s.trim().split(",")) {
                     vals.add(Double.parseDouble(weight));
