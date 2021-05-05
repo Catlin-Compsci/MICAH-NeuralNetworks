@@ -16,13 +16,8 @@ public class NodeLayer {
         }
     }
 
-    protected NodeLayer() {
-
-    }
-
-//    public NodeLayer(int nodeCount) {
-//        this(nodeCount,new ErrorSignal());
-//    }
+    // Default constructor for SensorLayer
+    protected NodeLayer() {}
 
     public ArrayShape getShape() {
         return new ArrayShape(nodes.size());

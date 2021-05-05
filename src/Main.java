@@ -6,14 +6,13 @@ import core.network_components.validation_functions.OneHotGreatest;
 import core.network_components.validation_functions.OneHotStandout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Main {
     public static void main(String... args) {
-
         LinearNetwork nn = new LinearNetwork(2);
-//        nn.addNodeLayer(2);
-        nn.addNodeLayer(4);
+        nn.addNodeLayer(2);
         nn.addNodeLayer(2);
 
         ArrayDataSet trainData = new ArrayDataSet();
@@ -28,7 +27,8 @@ public class Main {
 //            nn.fitSetSingle(trainData,1);
 //        }
 
-        nn.fitUntilValidated(trainData,.3,new OneHotStandout(.8,.3),1);
+        nn.fitUntilValidated(trainData,.05,new OneHotStandout(.9,0.5),1);
+//        nn.fitUntilValidated(trainData,1,new OneHotGreatest(),1);
 
         ArrayData input = ArrayData.linearFromArray(new double[]{0,0});
         System.out.println(input);
@@ -42,6 +42,10 @@ public class Main {
         input = ArrayData.linearFromArray(new double[]{1,1});
         System.out.println(input);
         System.out.println(nn.predict(input));
+        System.out.println("====================================");
 
+
+        nn.save("data/networks/XOR/xor_2_hidden_nodes.mpnn");
+        // .MPNN => Micah Powch Neural Network!
     }
 }

@@ -25,6 +25,7 @@ public class OneHotStandout extends OneHotGreatest {
         double[] liv = super.largestIndexValue(predictedY);
         double i = liv[0];
         double v = liv[1];
+        // initial onehotgreatest check
         if (super.largestIndex(real) != i) return false;
         // is above threshold
         if (v < threshold) return false;

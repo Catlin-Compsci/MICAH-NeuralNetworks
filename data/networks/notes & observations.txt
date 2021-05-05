@@ -1,0 +1,3 @@
+Trained AND with LR of 1, ~10 epochs for 0 hidden and 80-90 for 2 hidden nodes
+Trained XOR 3 hidden nodes LR 0.3, ~4000 epochs
+Trained XOR 2 hidden nodes LR 0.05, ~33k epochs
