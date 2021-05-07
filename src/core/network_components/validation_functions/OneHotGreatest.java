@@ -16,7 +16,7 @@ public class OneHotGreatest extends ValidationFunction {
         return valid;
     }
 
-    protected double[] largestIndexValue(ArrayData data) {
+    public static double[] largestIndexValue(ArrayData data) {
         int index = 0;
         double value = 0;
         for (int i = 0; i < data.getDimensionsUnsafe().size(); i++) {

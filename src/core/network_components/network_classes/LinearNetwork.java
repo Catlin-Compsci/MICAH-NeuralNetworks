@@ -6,7 +6,10 @@ import core.data.ArrayShape;
 import core.data.InputOutputPair;
 import core.data.exceptions.IllegalDataShapeException;
 import core.data.exceptions.MismachedNumberOfInputsAndOutputsException;
+import core.network_components.activation_functions.ActivationFunction;
+import core.network_components.activation_functions.Logistic;
 import core.network_components.error_functions.ErrorFunction;
+import core.network_components.error_functions.ErrorSignal;
 import core.network_components.network_abstract.Network;
 import core.network_components.validation_functions.ValidationFunction;
 import utils.ArrayUtils;
@@ -102,9 +105,13 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
             fitSetSingle(inputs, outputs, lRate);
             List<ArrayData> predicted = predict(inputs);
             double percentValid = validationFunction.percentValidated(predicted, outputs);
-            if (Integer.parseInt((String.valueOf(epochs) + "0").substring(1)) == 0)
+            if (percentValid >= proportuneValid) {
                 System.out.println("Epoch: " + epochs + " completed | Validation: " + percentValid);
-            if (percentValid >= proportuneValid) break;
+                break;
+            }
+            if (Integer.parseInt((String.valueOf(epochs) + "0").substring(1)) == 0) {
+                System.out.println("Epoch: " + epochs + " completed | Validation: " + percentValid);
+            }
         }
         System.out.println(proportuneValid + " validation accuracy met in " + epochs + " epochs");
         return epochs;
@@ -126,7 +133,14 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
 
     @Override
     public void fitSingle(ArrayData input, ArrayData correctOutput, double lRate, ErrorFunction err) {
-        ArrayData predictedOutput = predict(input);
+        fitSingleAlreadyRun(predict(input),correctOutput,lRate,err);
+    }
+
+    public void fitSingleAlreadyRun(ArrayData predictedOutput, ArrayData correctOutput, double lRate) {
+        fitSingleAlreadyRun(predictedOutput,correctOutput,lRate,new ErrorSignal());
+    }
+
+    public void fitSingleAlreadyRun(ArrayData predictedOutput, ArrayData correctOutput, double lRate, ErrorFunction err) {
         NodeLayer outputLayer = layers.getLast();
         for (int i = 0; i < outputLayer.nodes.size(); i++) {
             Node node = outputLayer.nodes.get(i);
@@ -175,8 +189,8 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
         fitSetSingle(inputs.getDimensionsUnsafe(), outputs.getDimensionsUnsafe(), lRate);
     }
 
-    public void addNodeLayer(int nodeCount) {
-        NodeLayer layer = new NodeLayer(nodeCount);
+    public void addNodeLayer(int nodeCount, ActivationFunction activation) {
+        NodeLayer layer = new NodeLayer(nodeCount, activation);
 
         NodeLayer previous;
         if (layers.size() == 0) {
@@ -189,6 +203,10 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
 
         layers.addLast(layer);
         outputShape = layer.getShape();
+    }
+
+    public void addNodeLayer(int nodeCount) {
+        addNodeLayer(nodeCount,new Logistic());
     }
 
     public ArrayShape getInputShape() {

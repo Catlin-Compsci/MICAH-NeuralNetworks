@@ -1,4 +1,6 @@
 package core.network_components;
 
-public interface Transformer {
+//O = Output Type
+public interface Transformer<I,O> {
+    public O transform(I input);
 }

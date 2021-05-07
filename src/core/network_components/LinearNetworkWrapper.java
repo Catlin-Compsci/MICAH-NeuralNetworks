@@ -1,5 +1,6 @@
 package core.network_components;
 
+import core.data.ArrayData;
 import core.data.ArrayShape;
 import core.network_components.network_classes.LinearNetwork;
 
@@ -12,5 +13,10 @@ public class LinearNetworkWrapper extends LinearNetwork {
 
     public LinearNetworkWrapper(ArrayShape inputShape) {
         super(inputShape);
+    }
+
+    @Override
+    public ArrayData predict(ArrayData input) {
+        return super.predict(input);
     }
 }
