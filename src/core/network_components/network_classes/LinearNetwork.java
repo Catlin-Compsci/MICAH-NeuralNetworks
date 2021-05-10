@@ -297,8 +297,8 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
 
     public static LinearNetwork load(String filePath) {
         try {
-            return createFromString(new Scanner(LinearNetwork.class.getResource(filePath).openStream()).tokens().collect(Collectors.joining("\n")));
-//            return createFromString(new Scanner(new File(filePath)).tokens().collect(Collectors.joining("\n")));
+//            return createFromString(new Scanner(LinearNetwork.class.getResource(filePath).openStream()).tokens().collect(Collectors.joining("\n")));
+            return createFromString(new Scanner(new File(filePath)).tokens().collect(Collectors.joining("\n")));
         } catch (FileNotFoundException e) {
             System.out.println("Could not load NN file! > " + e.getMessage());
         } catch (IOException e) {
