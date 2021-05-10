@@ -1,8 +1,10 @@
 import core.data.ArrayData;
 import core.data.ArrayDataSet;
 import core.data.InputOutputPair;
+import core.network_components.activation_functions.Linear;
 import core.network_components.network_classes.LinearNetwork;
 import core.network_components.validation_functions.OneHotGreatest;
+import core.network_components.validation_functions.OneHotStandout;
 import utils.ArrayUtils;
 
 import java.io.File;
@@ -35,13 +37,15 @@ public class AKDigitsClassifierExample {
         // BUILD NEURAL NETWORK!!!!
         LinearNetwork nn = new LinearNetwork(trainData.get(0).getInput().getShape());
         nn.addNodeLayer(50);
+        nn.addNodeLayer(50);
         nn.addNodeLayer(trainData.get(0).getOutput().getShape().numPoints());
 
 //        nn.fitUntilValidated(trainData,0.03,new OneHotStandout(0.5,0.1),0.98);
 //        nn.fitUntilValidated(trainData,0.25,new OneHotGreatest(),0.99);
-        nn.fitUntilValidated(trainData,0.03,new OneHotGreatest(),0.99);
-//        nn.save("data/networks/DIGITS-AK/2L-32,16.mpnn");
-        System.out.println("TEST ACCURACY: " + nn.testProportionValid(testData, new OneHotGreatest()));
+        nn.fitUntilValidated(trainData,0.03,new OneHotStandout(0.75,0.3),0.99);
+        nn.save("data/networks/DIGITS-AK/2L-50,50-OneHotSt.mpnn");
+        System.out.println("TEST ACCURACY: " + nn.testProportionValid(testData,new OneHotGreatest()));
+//        System.out.println("TEST ACCURACY: " + nn.testProportionValid(testData, new OneHotGreatest()));
 
 
 //        System.out.println("TEST ACCURACY: " + digitsNetwork.testProportionValid(testData, new OneHotGreatest()));

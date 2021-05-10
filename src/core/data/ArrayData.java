@@ -105,6 +105,19 @@ public class ArrayData implements Data<ArrayShape>, Iterable<ArrayData> {
         return ret;
     }
 
+    public ArrayData getFlattened() {
+        return reshape(new ArrayShape(this.getShape().numPoints()));
+    }
+
+    public double[] getAsDoubleArray() {
+        ArrayData flattened = getFlattened();
+        double[] ret = new double[flattened.getShape().numPoints()];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = flattened.getPoint(i);
+        }
+        return ret;
+    }
+
     public boolean isPoint() {
         return isPoint;
     }

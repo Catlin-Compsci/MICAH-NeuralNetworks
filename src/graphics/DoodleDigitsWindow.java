@@ -1,20 +1,17 @@
 package graphics;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import core.data.ArrayData;
-import core.network_components.OneHotOutputTransformer;
 import core.network_components.network_classes.LinearNetwork;
 import core.network_components.validation_functions.OneHotGreatest;
-import magick.ImageMagick;
-import magick.MagickImage;
-import magick.MagickLoader;
 import utils.ImageUtils;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.LinkedList;
 
 public class DoodleDigitsWindow extends JFrame {
 
@@ -37,12 +34,13 @@ public class DoodleDigitsWindow extends JFrame {
         } catch (Exception e) { e.printStackTrace(); }
 
 
-//        iIm = ImageUtils.resize(doodle, 8, 8,Image.SCALE_REPLICATE);
+//        iIm = ImageUtils.resize(iIm, 8, 8,Image.SCALE_REPLICATE);
         //smooth decimal
         // Polar black or white
-//        iIm = ImageUtils.resize(doodle, 8, 8,Image.SCALE_DEFAULT);
+//        iIm = ImageUtils.resize(iIm, 8, 8,Image.SCALE_DEFAULT);
 
-        iIm = ImageUtils.resize(iIm, 8, 8,Image.SCALE_SMOOTH);
+//        iIm = ImageUtils.resize(iIm, 8, 8,Image.SCALE_SMOOTH);
+        iIm = ImageUtils.resize(iIm, 8, 8,Image.SCALE_AREA_AVERAGING);
         Graphics2D pen = (Graphics2D) scaledImageRenderer.getDrawGraphics();
         pen.drawImage(iIm,15, 0,100,100,null);
 //        pen.setColor(Color.BLACK);
@@ -117,12 +115,56 @@ public class DoodleDigitsWindow extends JFrame {
         });
         scaledImageCanvas.createBufferStrategy(2);
         scaledImageRenderer = scaledImageCanvas.getBufferStrategy();
+        MouseListener ll = new InfoPanelMouseListener();
+        infoPanel.addMouseListener(ll);
+        scaledImagePanel.addMouseListener(ll);
+        scaledImageCanvas.addMouseListener(ll);
+        numberPanel.addMouseListener(ll);
+        scaledImagePanel.setVisible(true);
+    }
+
+    private class InfoPanelMouseListener implements MouseListener {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            scaledImagePanel.setVisible(!scaledImagePanel.isVisible());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
     }
 
     private class DrawHandler implements MouseListener, MouseMotionListener, KeyListener {
 
+        private long lastClicked = 0;
+        private static final int doubleClickMillis = 250;
+
         @Override
         public void mouseClicked(MouseEvent e) {
+        }
+
+        public void mouseDoubleClicked(MouseEvent e) {
+            p.setColor(Color.WHITE);
+            p.fillRect(0, 0, doodle.getWidth(), doodle.getHeight());
+            draw();
+            classify();
         }
 
         @Override
@@ -133,6 +175,12 @@ public class DoodleDigitsWindow extends JFrame {
             mousePos = e.getPoint();
             draw();
             classify();
+
+
+            if(System.currentTimeMillis() - lastClicked <= doubleClickMillis) {
+                mouseDoubleClicked(e);
+            }
+            lastClicked = System.currentTimeMillis();
         }
 
         @Override
@@ -186,10 +234,17 @@ public class DoodleDigitsWindow extends JFrame {
 
     public DoodleDigitsWindow(LinearNetwork digitClassfier) {
         super("Doodle Digits");
+        FlatLightLaf.install();
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception e) { e.printStackTrace(); }
+
         this.nn = digitClassfier;
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setIconImage(new ImageIcon("data/appstuff/DDLW.png").getImage());
+//        setIconImage(new ImageIcon("data/appstuff/DoodleDigitsIconRainbow.png").getImage());
 
         canvas = new Canvas();
         scaledImageCanvas = new Canvas();
@@ -203,6 +258,39 @@ public class DoodleDigitsWindow extends JFrame {
         scaledImagePanel.setForeground(new Color(1, 31, 21));
 //        number.setForeground(Color.GRAY);
         number.setFont(new Font("Roboto", Font.PLAIN, 70));
+//        JPanel instP = new JPanel();
+//        instP.setForeground(Color.WHITE);
+//        instP.setBackground(Color.WHITE);
+////        instP.setBackground(new Color(213, 213, 213));
+//        instP.setLayout(new BoxLayout(instP,BoxLayout.Y_AXIS));
+//        instP.setLayout(new GridBagLayout());
+//        instP.setLayout(new GridBagLayout());
+//        JTextArea inst = new JTextArea("Double-click to clear | Space to toggle eraser\nClick info panel to toggle input show\nClick this message to close");
+//        LinkedList<JLabel> messages = new LinkedList<>();
+//        messages.add(new JLabel("Double-click to clear | Space to toggle eraser"));
+//        messages.add(new JLabel("Click info panel to toggle input show"));
+//        messages.add(new JLabel("Click this message to dismiss it"));
+//        messages.forEach(m->{
+//            JPanel pp = new JPanel();
+//            m.setPreferredSize(new Dimension(250,20));
+//            pp.setMaximumSize(new Dimension(10000,20));
+//            m.setMaximumSize(new Dimension(10000,20));
+//            m.setForeground(new Color(130, 130, 130));
+//            m.setBackground(new Color(213, 213, 213));
+//            pp.add(m);
+//            instP.add(pp);
+//        });
+//        messages.get(1).setBackground(new Color(130, 130, 130));
+//        messages.get(1).setForeground(Color.WHITE);
+////        messages.get(1).setForeground(new Color(243, 243, 243));
+//        messages.get(1).getParent().setBackground(new Color(190, 190, 190));
+//        instP.setMaximumSize(new Dimension(10000,20*3));
+//
+//        instP.setSize(instP.getHeight(),60);
+//        instP.add(inst);
+//        inst.setForeground(Color.WHITE);
+//        inst.setForeground(new Color(130, 130, 130));
+//        inst.setBackground(new Color(213, 213, 213));
 
         getContentPane().setBackground(Color.WHITE);
         setForeground(Color.WHITE);
@@ -230,6 +318,7 @@ public class DoodleDigitsWindow extends JFrame {
 //        infoPanel.add(iSpyPanel);
         infoPanel.add(scaledImagePanel);
         infoPanel.add(numberPanel);
+//        add(instP);
         add(canvas);
         add(infoPanel);
 
@@ -255,5 +344,7 @@ public class DoodleDigitsWindow extends JFrame {
         drawingStuff();
 
         classify();
+
+        JOptionPane.showMessageDialog(canvas,"[✎] Drag pen and draw numbers!\n[✌] Double-click canvas to clear\n[⎵] Click space to toggle eraser mode\n\n[▤] Input image is automatically resized\n[\uD83D\uDC49] Click below image to hide/show input image preview\n\n- Written by Micah Powch -","Info",JOptionPane.INFORMATION_MESSAGE);
     }
 }
