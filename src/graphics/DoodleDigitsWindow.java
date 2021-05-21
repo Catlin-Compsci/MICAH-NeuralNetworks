@@ -2,7 +2,9 @@ package graphics;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import core.data.ArrayData;
+import core.data.exceptions.IllegalNetworkInputShape;
 import core.network_components.network_classes.LinearNetwork;
+import core.network_components.network_wrappers.DoubleTransformer;
 import core.network_components.validation_functions.OneHotGreatest;
 import utils.ImageUtils;
 
@@ -33,14 +35,16 @@ public class DoodleDigitsWindow extends JFrame {
 //            iIm.getGraphics().drawImage(trimmed,0,0,300,300,null);
         } catch (Exception e) { e.printStackTrace(); }
 
-
 //        iIm = ImageUtils.resize(iIm, 8, 8,Image.SCALE_REPLICATE);
         //smooth decimal
         // Polar black or white
 //        iIm = ImageUtils.resize(iIm, 8, 8,Image.SCALE_DEFAULT);
 
 //        iIm = ImageUtils.resize(iIm, 8, 8,Image.SCALE_SMOOTH);
-        iIm = ImageUtils.resize(iIm, 8, 8,Image.SCALE_AREA_AVERAGING);
+        // Resize
+        iIm = ImageUtils.resize(iIm, inputSide,inputSide,Image.SCALE_AREA_AVERAGING);
+
+        // Draw
         Graphics2D pen = (Graphics2D) scaledImageRenderer.getDrawGraphics();
         pen.drawImage(iIm,15, 0,100,100,null);
 //        pen.setColor(Color.BLACK);
@@ -50,13 +54,14 @@ public class DoodleDigitsWindow extends JFrame {
         ArrayData inputData = new ArrayData();
         for (int y = 0; y < iIm.getHeight(); y++) {
             for (int x = 0; x < iIm.getWidth(); x++) {
-                inputData.add((double) (255 - new Color(iIm.getRGB(x, y)).getGreen()) * (double) 16 / (double) 256);
+                inputData.add(pixelTransformer.transform((double)new Color(iIm.getRGB(x, y)).getGreen()));
             }
         }
         ArrayData prediction = nn.predict(inputData);
         System.out.print(prediction + "\r");
         double[] largest = OneHotGreatest.largestIndexValue(prediction);
-         number.setText(largest[1]>0.5d ? (int)largest[0] + "" : "?");
+         number.setText((int)largest[0] + "");
+//         number.setText(largest[1]>0.5d ? (int)largest[0] + "" : "?");
     }
 
 
@@ -76,12 +81,14 @@ public class DoodleDigitsWindow extends JFrame {
     BufferStrategy scaledImageRenderer;
     JPanel scaledImagePanel;
     BufferedImage iIm;
+    DoubleTransformer pixelTransformer;
 
     final int pw = 40;
     int penWidth = pw;
     Stroke penStroke = new BasicStroke(penWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     boolean eraser = false;
     Point mousePos;
+    int inputSide = 8;
 
     private void makeStroke() {
         penWidth = eraser ? (int) (pw * ((double) 35 / (double) 20)) : pw;
@@ -232,7 +239,7 @@ public class DoodleDigitsWindow extends JFrame {
         }
     }
 
-    public DoodleDigitsWindow(LinearNetwork digitClassfier) {
+    public DoodleDigitsWindow(LinearNetwork digitClassfier, DoubleTransformer pixelTransformer) {
         super("Doodle Digits");
         FlatLightLaf.install();
         try {
@@ -240,6 +247,10 @@ public class DoodleDigitsWindow extends JFrame {
         } catch (Exception e) { e.printStackTrace(); }
 
         this.nn = digitClassfier;
+        this.pixelTransformer = pixelTransformer;
+        double isd = Math.sqrt(digitClassfier.getInputShape().numPoints());
+        if((int)isd != isd) throw new IllegalNetworkInputShape("Network input shape " + digitClassfier.getInputShape() + " invalid: Network must accept square images!");
+        inputSide = (int) isd;
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -345,6 +356,6 @@ public class DoodleDigitsWindow extends JFrame {
 
         classify();
 
-        JOptionPane.showMessageDialog(canvas,"[✎] Drag pen and draw numbers!\n[✌] Double-click canvas to clear\n[⎵] Click space to toggle eraser mode\n\n[▤] Input image is automatically resized\n[\uD83D\uDC49] Click below image to hide/show input image preview\n\n- Written by Micah Powch -","Info",JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(canvas,"HOW TO DRAW:\n[✎] Drag pen and draw numbers!\n[✌] Double-click canvas to clear\n[⎵] Click space to toggle eraser mode\n\nOTHER:\n[▤] Input image is automatically resized\n[\uD83D\uDC49] Click below image to hide/show input resized image preview\n\n- Written by Micah Powch -","Info",JOptionPane.INFORMATION_MESSAGE);
     }
 }

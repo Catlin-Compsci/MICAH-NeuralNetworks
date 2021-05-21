@@ -16,7 +16,6 @@
     <root id="root">
       <element id="archive" name="NEURAL_NETWORKS.jar">
         <element id="module-output" name="NEURAL NETWORKS" />
-        <element id="library" level="project" name="jmagick:jmagick:6.6.9" />
         <element id="library" level="project" name="com.formdev:flatlaf:1.1.2" />
       </element>
     </root>

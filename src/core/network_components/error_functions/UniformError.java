@@ -14,4 +14,7 @@ public class UniformError implements ErrorFunction {
     public double getError(double correct, double predicted, ActivationFunction activation) {
         return errorVal;
     }
+    public double getLoss(double correct, double predicted) {
+        return errorVal;
+    }
 }

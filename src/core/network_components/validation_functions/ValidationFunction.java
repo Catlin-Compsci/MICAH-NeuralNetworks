@@ -1,5 +1,6 @@
 package core.network_components.validation_functions;
 
+import core.Config;
 import core.data.ArrayData;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public abstract class ValidationFunction {
         assert real.size() == predicted.size();
         double correct = 0;
         for(int i = 0; i < predicted.size(); i++) {
+            if(Config.verbose) System.out.print("VALIDATING - Example (" + i + " / " + predicted.size() + ")\r");
             correct+=validate(predicted.get(i),real.get(i)) ? 1 : 0;
         }
         return correct/(double) predicted.size();

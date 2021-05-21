@@ -22,7 +22,7 @@ public class GANTest {
 
         // Train gan
         for (int i = 0; i < 100000; i++) {
-            gan.fitSingle(lolRandomExample,0.03);
+//            gan.fitSingle(lolRandomExample,0.03);
         }
 
         System.out.println(gan.generate());

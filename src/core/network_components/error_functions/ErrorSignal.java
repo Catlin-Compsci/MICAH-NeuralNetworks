@@ -7,4 +7,8 @@ public class ErrorSignal implements ErrorFunction {
     public double getError(double correct, double predicted, ActivationFunction activation) {
         return (correct-predicted) * activation.slopeAtY(predicted);
     }
+
+    public double getLoss(double correct, double predicted) {
+        return correct-predicted;
+    }
 }

@@ -1,5 +1,7 @@
 package core.data;
 
+import core.data.exceptions.CannotReshapeArrayException;
+import core.data.exceptions.CannotReshapeFlatArrayException;
 import core.data.exceptions.MultiDimensionalArrayIndexOutOfBoundsException;
 import core.data.exceptions.MultiDimensionalArrayIndexTooShortException;
 import core.network_components.activation_functions.Linear;
@@ -15,8 +17,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ArrayData implements Data<ArrayShape>, Iterable<ArrayData> {
-    private ArrayShape shape;
-    ArrayList<ArrayData> dimensions;
+    protected ArrayShape shape;
+    protected ArrayList<ArrayData> dimensions;
     double data;
     private boolean isPoint;
 
@@ -26,7 +28,7 @@ public class ArrayData implements Data<ArrayShape>, Iterable<ArrayData> {
     }
 
     public static ArrayData of(double... points) {
-        ArrayData ret = new ArrayData();
+        ArrayData ret = new ArrayData(points.length);
         for(double point : points) {
             ret.add(new ArrayData(point));
         }
@@ -59,7 +61,15 @@ public class ArrayData implements Data<ArrayShape>, Iterable<ArrayData> {
     }
 
     public ArrayData() {
-        dimensions = new ArrayList<>();
+        if(this instanceof ArrayArrayData) {
+            isPoint = false;
+        } else {
+            dimensions = new ArrayList<>();
+            shape = null;
+        }
+    }
+    public ArrayData(int initialCapacity) {
+        dimensions = new ArrayList<>(initialCapacity);
         shape = null;
     }
     

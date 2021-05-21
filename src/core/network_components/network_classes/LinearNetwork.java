@@ -1,9 +1,7 @@
 package core.network_components.network_classes;
 
-import core.data.ArrayData;
-import core.data.ArrayDataSet;
-import core.data.ArrayShape;
-import core.data.InputOutputPair;
+import core.Config;
+import core.data.*;
 import core.data.exceptions.IllegalDataShapeException;
 import core.data.exceptions.MismachedNumberOfInputsAndOutputsException;
 import core.network_components.activation_functions.ActivationFunction;
@@ -12,9 +10,10 @@ import core.network_components.error_functions.ErrorFunction;
 import core.network_components.error_functions.ErrorSignal;
 import core.network_components.network_abstract.Network;
 import core.network_components.validation_functions.ValidationFunction;
-import utils.ArrayUtils;
+//import me.tongfei.progressbar.ProgressBar;
+//import me.tongfei.progressbar.ProgressBarBuilder;
+//import me.tongfei.progressbar.ProgressBarStyle;
 import utils.ListUtils;
-import utils.NumUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,7 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // POSSIBLE WRONGIN'S
 //
@@ -69,7 +67,7 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
         input = input.reshape(inputShape);
 //        NodeLayer inputDataLayer = input.getAsNodeLayer();
 
-        for (int i = 0; i < input.getDimensionsUnsafe().size(); i++) {
+        for (int i = 0; i < input.getShape().getDims()[0]; i++) {
 //            layers.getFirst().nodes.get(i).set(inputDataLayer.nodes.get(i).emit());
 //            layers.getFirst().nodes.get(i).set(input.get(i).getData());
             sensorLayer.nodes.get(i).set(input.getPoint(i));
@@ -81,8 +79,13 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
     }
 
     public List<ArrayData> predict(List<ArrayData> inputs) {
-        LinkedList<ArrayData> predicted = new LinkedList<>();
-        inputs.forEach(input -> predicted.add(predict(input)));
+        ArrayList<ArrayData> predicted = new ArrayList<>(inputs.size());
+        int i = 0;
+        for (ArrayData input : inputs) {
+            i++;
+            if(Config.verbose) System.out.print("CALCULATING PREDICTIONS - Inputs (" + i + " / " + inputs.size() + ")\r");
+            predicted.add(predict(input));
+        }
         return predicted;
     }
 
@@ -133,31 +136,60 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
 
     @Override
     public void fitSingle(ArrayData input, ArrayData correctOutput, double lRate, ErrorFunction err) {
-        fitSingleAlreadyRun(predict(input),correctOutput,lRate,err);
+        ArrayData prediction = predict(input);
+        calculateError(prediction,correctOutput,new ErrorSignal());
+        propagateError();
+        updateWeights(lRate);
     }
 
     public void fitSingleAlreadyRun(ArrayData predictedOutput, ArrayData correctOutput, double lRate) {
         fitSingleAlreadyRun(predictedOutput,correctOutput,lRate,new ErrorSignal());
     }
 
-    public void fitSingleAlreadyRun(ArrayData predictedOutput, ArrayData correctOutput, double lRate, ErrorFunction err) {
+    public void fitSingleAlreadyRun(ArrayData prediction, ArrayData correctOutput, double lRate, ErrorFunction err) {
+        calculateError(prediction,correctOutput,new ErrorSignal());
+        propagateError();
+        updateWeights(lRate);
+    }
+
+    public void calculateError(ArrayData predictedOutput, ArrayData correctOutput, ErrorFunction err) {
         NodeLayer outputLayer = layers.getLast();
         for (int i = 0; i < outputLayer.nodes.size(); i++) {
             Node node = outputLayer.nodes.get(i);
             //TODO test that this is correct!
+//            node.errorSignal = err.getLoss(correctOutput.getPoint(i), predictedOutput.getPoint(i)) * node.activation.slopeAtY(predictedOutput.getPoint(i));
             node.errorSignal = err.getError(correctOutput.getPoint(i), predictedOutput.getPoint(i), node.activation);
 //            node.connectionsIn.forEach(c-> c.weight += node.errorSignal * c.start.emit() * lRate);
         }
+    }
+    public void propagateError() {
 //        predLayer.nodes.forEach(from -> layer.nodes.forEach(to -> new Connection(from, to)));
-
         ListUtils.reverserator(layers, 1).forEachRemaining(l -> l.nodes.forEach(n -> {
             n.errorSignal = 0;
             n.connectionsOut.forEach(c -> n.errorSignal += c.end.errorSignal * c.weight);
             // TODO Switch this out
 //            n.errorSignal *= n.activation.slopeAtX(n.getTotal());
             n.errorSignal *= n.activation.slopeAtY(n.emit());
-
         }));
+    }
+    public void propagateTo(LinearNetwork feeder) {
+        assert feeder.outputShape == this.inputShape : "feeder network output shape must match receiver input shape";
+        NodeLayer fromSensors = sensorLayer;
+//        NodeLayer fromSensors = layers.getFirst();
+        NodeLayer toOutputs = feeder.layers.getLast();
+        int i = 0;
+        for (Node n : toOutputs.nodes) {
+            n.errorSignal = 0;
+            //Todo replace with itterator for performance
+            fromSensors.nodes.get(i).connectionsOut.forEach(c -> n.errorSignal += c.end.errorSignal * c.weight);
+            n.errorSignal *= n.activation.slopeAtY(n.emit());
+//            System.out.println(n.errorSignal);
+//            System.out.println(n.activation.slopeAtY(n.emit()));
+            i++;
+        }
+    }
+
+    public void updateWeights(double lRate) {
         ListUtils.reverserator(layers).forEachRemaining(l -> l.nodes.forEach(n ->
                 n.connectionsIn.forEach(c -> {
                     //todO check that ones in are ends
@@ -169,11 +201,23 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
 
     @Override
     public void fitSetSingle(List<ArrayData> inputs, List<ArrayData> outputs, double lRate) {
+//        ProgressBar pp = new ProgressBarBuilder().setStyle(ProgressBarStyle.ASCII).setInitialMax(inputs.size()).setTaskName("Running Epoch...").build();
+
         if (inputs.size() != outputs.size())
             throw new MismachedNumberOfInputsAndOutputsException(inputs.size(), outputs.size());
-        for (int i = 0; i < inputs.size(); i++) {
-            fitSingle(inputs.get(i), outputs.get(i), lRate);
+        int i = 0;
+        Iterator<ArrayData> inputI = inputs.iterator();
+        Iterator<ArrayData> outputI = outputs.iterator();
+//        for (int i = 0; i < inputs.size(); i++) {
+        while(inputI.hasNext()) {
+            if(Config.verbose) System.out.print("LEARNING - Example (" + i + " / " + inputs.size() + ")\r");
+            fitSingle(inputI.next(), outputI.next(), lRate);
+//            pp.step();
+            i++;
         }
+//        pp.setExtraMessage("\rhi");
+//        pp.close();
+        if(Config.verbose) System.out.print("Epoch complete. Calculating validation accuracy...\r");
     }
 
     @Override
@@ -207,6 +251,9 @@ public class LinearNetwork implements Network<ArrayData, ArrayData> {
 
     public void addNodeLayer(int nodeCount) {
         addNodeLayer(nodeCount,new Logistic());
+    }
+    public void addNodeLayer(ArrayShape shape) {
+        addNodeLayer(shape.numPoints());
     }
 
     public ArrayShape getInputShape() {
