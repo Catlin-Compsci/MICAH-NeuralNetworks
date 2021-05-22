@@ -100,6 +100,10 @@ public class GANetwork implements GenerativeNetwork {
     
     
     private ArrayData getNoise() {
-        return ArrayData.of(random.nextDouble());
+        ArrayData noise = new ArrayData();
+        for (int i = 0; i < generator.getInputShape().getDims()[0]; i++) {
+            noise.add(random.nextDouble());
+        }
+        return noise;
     }
 }
