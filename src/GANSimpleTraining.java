@@ -6,7 +6,7 @@ import core.network_components.network_wrappers.GANetwork;
 
 import java.util.LinkedList;
 
-public class GANTestTWOOOO {
+public class GANSimpleTraining {
     public static void main(String... args) {
 
         LinkedList<ArrayData> data = new LinkedList<>();

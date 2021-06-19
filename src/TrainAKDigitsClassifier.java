@@ -46,11 +46,13 @@ public class TrainAKDigitsClassifier {
 //        nn.addNodeLayer(3);
         nn.addNodeLayer(trainData.get(0).getOutput().getShape().numPoints());
 
-//        nn.fitUntilValidated(trainData,0.03,new OneHotStandout(0.5,0.1),0.98);
-        nn.fitUntilValidated(trainData,0.03,new OneHotGreatest(),0.99);
+        // TRAIN AND BE SURE
+        nn.fitUntilValidated(trainData,0.03,new OneHotStandout(0.5,0.1),0.98);
+//        nn.fitUntilValidated(trainData,0.03,new OneHotGreatest(),0.99);
 //        nn.fitUntilValidated(trainData,1,new OneHotStandout(0.75,0.3),0.99);
-//        nn.save("data/networks/DIGITS-AK/2L-50,50-OneHotSt.mpnn");
         System.out.println("TEST ACCURACY: " + nn.testProportionValid(testData,new OneHotGreatest()));
+        nn.save("data/networks/DIGITS-AK/training-demo.mpnn");
+        System.out.println("Network saved to data/networks/DIGITS-AK/training-demo.mpnn");
 //        System.out.println("TEST ACCURACY: " + nn.testProportionValid(testData, new OneHotGreatest()));
 
 

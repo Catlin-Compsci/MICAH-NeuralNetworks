@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class ValidationFunction {
+public interface ValidationFunction {
 
-    public abstract boolean validate(ArrayData predictedY, ArrayData real);
+    public boolean validate(ArrayData predictedY, ArrayData real);
 
 //    public interface ValidationFunctionFactory extends Function<List<ArrayData>,ValidationFunction> {
 //        public ValidationFunction apply(List<ArrayData> data);
@@ -22,7 +22,7 @@ public abstract class ValidationFunction {
 //        }
 //    };
 
-    public double percentValidated(List<ArrayData> predicted, List<ArrayData> real) {
+    public default double percentValidated(List<ArrayData> predicted, List<ArrayData> real) {
         assert real.size() == predicted.size();
         double correct = 0;
         for(int i = 0; i < predicted.size(); i++) {

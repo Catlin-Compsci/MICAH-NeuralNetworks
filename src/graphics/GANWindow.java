@@ -36,23 +36,29 @@ public class GANWindow extends JFrame {
         setSize(new Dimension(600,600));
         setResizable(false);
 
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 300; i++) {
             ArrayData generated = gan.generate();
             System.out.println(generated);
             canvas.getBufferStrategy().getDrawGraphics().drawImage(imageBarfer.transform(generated),0,0,canvas.getWidth(),canvas.getHeight(),null);
             canvas.getBufferStrategy().show();
             gan.fitEpoch(examples,lRate);
-        }
-        while(true) {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+//            try {
+////                Thread.sleep(2000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            for(int ii = 0; ii<50; ii++) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                generated = gan.generate();
+                System.out.println(generated);
+                canvas.getBufferStrategy().getDrawGraphics().drawImage(imageBarfer.transform(generated),0,0,canvas.getWidth(),canvas.getHeight(),null);
+                canvas.getBufferStrategy().show();
             }
-            ArrayData generated = gan.generate();
-            System.out.println(generated);
-            canvas.getBufferStrategy().getDrawGraphics().drawImage(imageBarfer.transform(generated),0,0,canvas.getWidth(),canvas.getHeight(),null);
-            canvas.getBufferStrategy().show();
         }
+
     }
 }

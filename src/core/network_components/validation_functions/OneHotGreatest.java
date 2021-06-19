@@ -5,7 +5,7 @@ import core.data.ArrayShape;
 
 import java.util.List;
 
-public class OneHotGreatest extends ValidationFunction {
+public class OneHotGreatest implements ValidationFunction {
 
 
     @Override

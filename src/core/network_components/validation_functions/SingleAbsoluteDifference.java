@@ -2,7 +2,7 @@ package core.network_components.validation_functions;
 
 import core.data.ArrayData;
 
-public class SingleAbsoluteDifference extends ValidationFunction {
+public class SingleAbsoluteDifference implements ValidationFunction {
 
     double maxDif;
 
