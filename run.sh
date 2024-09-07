@@ -1,0 +1,1 @@
+rm -r out; cp -r src out; cd out; javac DoodleDigits.java; java DoodleDigits && cd .. && rm -r out;
